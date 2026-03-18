@@ -5,6 +5,14 @@ import type { StatusData } from "../components/drawer/StatusPanel";
 
 export const statusDataBlåmeis: StatusData[] = [
   {
+    fase: "Ingen fugler enda",
+    img: nest_empty,
+    alt: "Tomt fuglehus",
+    description: "Småfuglene leter etter et sted å bo fra mars til april",
+    startDate: new Date(2026, 2, 1),
+    duration: 31,
+  },
+  {
     fase: "Redebygging",
     img: nest_empty,
     alt: "Tomt reir",

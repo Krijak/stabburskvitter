@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import background from "./img/background.png";
 import blue_tit_flying from "./img/blue_tit_flying.gif";
 
