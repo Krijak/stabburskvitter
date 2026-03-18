@@ -19,8 +19,8 @@ const OmStabburskvitterPanel = () => {
           Om
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-          Dette er en livestream fra fuglehuset som henger i bakgården til PP14
-          og PP15
+          Her kommer det livestream fra fuglehuset som henger i bakgården til
+          PP14 og PP15
         </Typography>
       </Stack>
       <Stack gap={1}>

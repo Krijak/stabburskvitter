@@ -1,8 +1,5 @@
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import { cameraStreamUrl } from "../config/camera";
-import { Stack } from "@mui/material";
 
 const FeedContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -19,19 +16,18 @@ const FeedContainer = styled(Box)(({ theme }) => ({
   },
 }));
 
-const StreamImage = styled("img")({
-  position: "absolute",
-  inset: 0,
-  width: "100%",
-  height: "100%",
-  objectFit: "cover",
-  display: "block",
-});
+// const StreamImage = styled("img")({
+//   position: "absolute",
+//   inset: 0,
+//   width: "100%",
+//   height: "100%",
+//   objectFit: "cover",
+//   display: "block",
+// });
 
 export default function CameraFeed() {
-  const streamUrl = cameraStreamUrl;
-  const showLive = Boolean(streamUrl);
-  const blue_tit_flying = "src/img/blue_tit_flying.gif";
+  // const streamUrl = cameraStreamUrl;
+  // const showLive = Boolean(streamUrl);
 
   return (
     <>

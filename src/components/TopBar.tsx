@@ -16,6 +16,7 @@ import birdhouseIcon from "../img/stabbur_icon.svg";
 import StatusPanel from "./drawer/StatusPanel";
 import OmBlaameisenPanel from "./drawer/OmBlaameisenPanel";
 import OmStabburskvitterPanel from "./drawer/OmStabburskvitterPanel";
+import { statusDataBlåmeis } from "../helpers/data";
 
 export type DrawerId = "status" | "om-blaameisen" | "om-stabburskvitter";
 
@@ -26,8 +27,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: "status", label: "STATUS" },
-  { id: "om-blaameisen", label: "OM BLÅMEISEN" },
-  { id: "om-stabburskvitter", label: "OM STABBURSKVITTER" },
+  { id: "om-blaameisen", label: "BLÅMEISEN" },
+  { id: "om-stabburskvitter", label: "STABBURSKVITTER" },
 ];
 
 const Logo = () => (
@@ -112,46 +113,58 @@ export default function TopBar() {
             <>
               <IconButton
                 aria-label="Åpne navigasjonsmeny"
-                onClick={() => setNavListOpen(true)}
+                onClick={() => {
+                  setNavListOpen(!navListOpen);
+                  closePanelDrawer();
+                }}
                 color="inherit"
               >
                 <MenuIcon />
               </IconButton>
               <Drawer
-                anchor="right"
+                anchor="top"
                 open={navListOpen}
                 onClose={() => setNavListOpen(false)}
+                slotProps={{
+                  root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+                  backdrop: { sx: { backgroundColor: "transparent" } },
+                  paper: {
+                    sx: {
+                      backgroundColor: theme.palette.background.paper,
+                      pt: "5rem",
+                    },
+                  },
+                }}
               >
                 <Stack
                   role="navigation"
                   justifyContent="space-between"
                   alignItems="center"
                   height="100%"
-                  padding={2}
                 >
-                  <List>
+                  <List
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                    }}
+                  >
                     {navItems.map((item) => (
-                      <ListItem key={item.id}>
-                        <Button
-                          variant="primary"
-                          onClick={() => openPanelDrawer(item.id)}
-                          fullWidth
-                          sx={{
-                            padding: "0.5rem",
-                            fontWeight: openDrawer === item.id ? 700 : 400,
-                          }}
-                        >
-                          {item.label}
-                        </Button>
+                      <ListItem key={item.id} sx={{ width: "unset" }}>
+                        <Box>
+                          <Button
+                            variant="primary"
+                            onClick={() => openPanelDrawer(item.id)}
+                            sx={{
+                              fontWeight: openDrawer === item.id ? 700 : 400,
+                            }}
+                          >
+                            {item.label}
+                          </Button>
+                        </Box>
                       </ListItem>
                     ))}
                   </List>
-                  <Button
-                    variant="primary"
-                    onClick={() => setNavListOpen(false)}
-                  >
-                    LUKK
-                  </Button>
                 </Stack>
               </Drawer>
             </>
@@ -197,7 +210,9 @@ export default function TopBar() {
             }}
           >
             <Stack padding={4}>
-              {openDrawer === "status" && <StatusPanel />}
+              {openDrawer === "status" && (
+                <StatusPanel statusData={statusDataBlåmeis[0]} />
+              )}
               {openDrawer === "om-blaameisen" && <OmBlaameisenPanel />}
               {openDrawer === "om-stabburskvitter" && (
                 <OmStabburskvitterPanel />
