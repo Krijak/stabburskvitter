@@ -41,6 +41,8 @@ function getDateProgress(start: Date, end: Date, today: Date): number {
   return Math.round(((t - s) / (e - s)) * 100);
 }
 
+import FaseProgress from "./FaseProgress";
+
 const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
   const today = new Date();
   const startDate = statusData.startDate;
@@ -92,6 +94,7 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
       <Stack padding={2}>
         <Typography variant="body2">{statusData.description}</Typography>
       </Stack>
+      <FaseProgress fasename={statusData.fase} />
     </Stack>
   );
 };

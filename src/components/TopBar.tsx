@@ -90,13 +90,10 @@ export default function TopBar() {
           gridTemplateColumns: "1fr auto 1fr",
           alignItems: "center",
           width: "100%",
+          padding: 1,
         }}
       >
-        <Stack
-          justifyContent="center"
-          padding={1}
-          sx={{ justifySelf: "start" }}
-        >
+        <Stack justifyContent="center" sx={{ justifySelf: "start" }}>
           <img
             src={birdhouseIcon}
             alt="Stabbur-ikon"
@@ -204,7 +201,6 @@ export default function TopBar() {
                   backgroundColor: theme.palette.background.paper,
                   pt: "5rem",
                   pb: "2rem",
-                  // transition: "height 0.3s ease-in-out",
                 },
               },
             }}
