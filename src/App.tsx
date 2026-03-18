@@ -1,121 +1,89 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import Box from "@mui/material/Box";
+import { styled } from "@mui/material/styles";
+import TopBar from "./components/TopBar";
+import CameraFeed from "./components/CameraFeed";
+import { Stack, Typography } from "@mui/material";
+import background from "./img/background.png";
+import blue_tit_flying from "./img/blue_tit_flying.gif";
 
-function App() {
-  const [count, setCount] = useState(0)
+const MainContent = styled("main")({
+  position: "relative",
+  flex: 1,
+  minHeight: "calc(100vh - 6.6875rem)",
+  overflow: "hidden",
+});
 
+const BackgroundImage = styled("img")({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+  objectPosition: "center",
+  pointerEvents: "none",
+  userSelect: "none",
+});
+
+const ContentArea = styled(Box)({
+  position: "relative",
+  zIndex: 1,
+  display: "flex",
+  height: "100%",
+  minHeight: "calc(100vh - 6.6875rem)",
+  alignItems: "center",
+});
+
+const CameraFeedWrapper = styled(Box)(({ theme }) => ({
+  flex: 1,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: theme.spacing(4),
+}));
+
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <Stack direction="column" sx={{ minHeight: "100vh", height: "100%" }}>
+      <TopBar />
+      <MainContent>
+        <BackgroundImage
+          src={background}
+          alt=""
+          aria-hidden="true"
+          loading="eager"
+        />
+        <ContentArea>
+          <Stack
+            sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
+            alignItems="center"
+            justifyContent="center"
+            zIndex={0}
+          >
+            {/* <Typography variant="body2">LASTER VIDEO...</Typography> */}
+            <Stack width="6rem" justifyContent="center" alignItems="center">
+              <Halo />
+              <img
+                src={blue_tit_flying}
+                style={{ mixBlendMode: "darken" }}
+                width="100%"
+              />
+            </Stack>
+          </Stack>
+          <CameraFeedWrapper>
+            <CameraFeed />
+          </CameraFeedWrapper>
+        </ContentArea>
+      </MainContent>
+    </Stack>
+  );
 }
 
-export default App
+const Halo = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  width: "0px",
+  height: "0px",
+  borderRadius: "50%",
+  // boxShadow: "0 0 50px 56px #c9d4cdbd",
+  boxShadow: "0 0 50px 36px #fffffff2",
+}));
