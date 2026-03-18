@@ -16,18 +16,18 @@ const username = process.env.VITE_CAMERA_USERNAME ?? 'Fuglehuset';
 const password = process.env.VITE_CAMERA_PASSWORD ?? 'AlleFuglerSmaaDeEr1415';
 const rtspUrl = `rtsp://${encodeURIComponent(username)}:${encodeURIComponent(password)}@${ip}:554/stream=0`;
 
+function sendError(res, statusCode, message) {
+  if (res.writableEnded) return;
+  res.writeHead(statusCode, { 'Content-Type': 'text/plain' });
+  res.end(message);
+}
+
 const server = createServer((req, res) => {
   if (req.url !== '/stream' && req.url !== '/stream/') {
     res.writeHead(404);
     res.end();
     return;
   }
-
-  res.writeHead(200, {
-    'Content-Type': 'multipart/x-mixed-replace; boundary=ffmpeg',
-    'Cache-Control': 'no-store',
-    'Access-Control-Allow-Origin': '*',
-  });
 
   const ffmpeg = spawn(
     'ffmpeg',
@@ -37,7 +37,7 @@ const server = createServer((req, res) => {
       '-i',
       rtspUrl,
       '-f',
-      'mpjpeg',
+      'mjpeg',
       '-q:v',
       '5',
       '-',
@@ -45,17 +45,33 @@ const server = createServer((req, res) => {
     { stdio: ['ignore', 'pipe', 'pipe'] }
   );
 
-  ffmpeg.stdout.pipe(res);
+  let headersSent = false;
 
-  ffmpeg.stderr.on('data', (d) => {
-    process.stderr.write(d);
-  });
+  function startStream(firstChunk) {
+    if (headersSent) return;
+    headersSent = true;
+    res.writeHead(200, {
+      'Content-Type': 'multipart/x-mixed-replace; boundary=ffmpeg',
+      'Cache-Control': 'no-store',
+      'Access-Control-Allow-Origin': '*',
+    });
+    res.write(firstChunk);
+    ffmpeg.stdout.pipe(res);
+  }
+
+  ffmpeg.stdout.once('data', (chunk) => startStream(chunk));
+
+  ffmpeg.stderr.on('data', (d) => process.stderr.write(d));
 
   ffmpeg.on('error', (err) => {
     console.error('ffmpeg error:', err.message);
-    if (!res.writableEnded) {
-      res.writeHead(500);
-      res.end('Stream failed');
+    sendError(res, 503, 'ffmpeg not available or failed to start');
+    ffmpeg.kill('SIGTERM');
+  });
+
+  ffmpeg.on('exit', (code) => {
+    if (!headersSent && code !== 0) {
+      sendError(res, 503, 'Stream unavailable (camera unreachable or ffmpeg failed)');
     }
   });
 
