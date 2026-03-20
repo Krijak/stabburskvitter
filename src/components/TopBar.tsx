@@ -41,6 +41,7 @@ const Logo = () => (
   <Box sx={{ textAlign: "center", justifySelf: "center" }}>
     <Typography
       color="text.primary"
+      component="h1"
       sx={{
         fontFamily: '"Kaisei Tokumin", serif',
         fontSize: "1.25rem",
@@ -52,6 +53,7 @@ const Logo = () => (
     </Typography>
     <Typography
       color="text.primary"
+      component="span"
       sx={{
         fontFamily: '"Inter", sans-serif',
         fontSize: "0.75rem",
@@ -63,11 +65,13 @@ const Logo = () => (
     </Typography>
     <Typography
       color="text.secondary"
+      component={"span"}
       sx={{
         fontFamily: '"Inter", sans-serif',
         fontSize: "0.75rem",
         lineHeight: 1.3,
         marginBottom: 0,
+        display: "block",
       }}
     >
       est. 2026
@@ -140,7 +144,7 @@ export default function TopBar() {
                 }}
               >
                 <Stack
-                  role="navigation"
+                  component={"nav"}
                   justifyContent="space-between"
                   alignItems="center"
                   height="100%"

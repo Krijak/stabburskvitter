@@ -5,7 +5,7 @@ import { Box, Link } from "@mui/material";
 
 const OmStabburskvitterPanel = () => {
   return (
-    <Stack gap={2} alignItems="center" textAlign="center">
+    <Stack gap={2} alignItems="center" justifyContent="center">
       <Box width={"5rem"}>
         <img
           src={stabbur_icon}
@@ -18,28 +18,33 @@ const OmStabburskvitterPanel = () => {
         <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
           Om Stabburskvitter
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+        <Typography variant="body2" color="text.secondary" flex={1}>
           Her kommer det livestream fra fuglehuset som henger i bakgården til
           PP14 og PP15
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+        <Typography variant="body2" color="text.secondary" flex={1}>
           Fuglehuset er egnet for spurver, meiser og finker, og kan også fungere
           som en fuglemater på vinteren!
         </Typography>
       </Stack>
       <Stack gap={1}>
-        <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+        <Typography component={"h2"} variant="subtitle1" fontWeight={"bold"}>
           Kameraet
         </Typography>
 
-        <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+        <Typography variant="body2" color="text.secondary" flex={1}>
           Kameraet i fuglehuset får strøm fra et solcellepanel, og vil derfor
           ikke alltid være tilgjengelig. For ordens skyld er mikrofonen i
           kameraet skrudd av.
         </Typography>
       </Stack>
-      <Stack gap={1}>
-        <Typography component={"h2"} variant="subtitle1" fontWeight={"bold"}>
+      <Stack gap={1} width={"100%"}>
+        <Typography
+          component={"h2"}
+          variant="subtitle1"
+          fontWeight={"bold"}
+          flex={1}
+        >
           Kontakt
         </Typography>
         <Link

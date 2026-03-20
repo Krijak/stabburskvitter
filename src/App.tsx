@@ -10,7 +10,7 @@ export default function App() {
   return (
     <Stack
       direction="column"
-      sx={{ minHeight: "100vh", height: "100%" }}
+      sx={{ minHeight: "100svh", height: "100%" }}
       bgcolor={"#eef6ee"}
     >
       <TopBar />
