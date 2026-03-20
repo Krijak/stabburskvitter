@@ -1,8 +1,14 @@
 /**
- * Wivacam MW5NK camera configuration.
- * For browser playback: set VITE_CAMERA_STREAM_URL to an HTTP MJPEG/HLS URL
- * (e.g. from a backend proxy that converts RTSP to MJPEG). Browsers cannot play RTSP directly.
- * Prefer env vars in production so credentials are not in source.
+ * Camera stream for the browser (MJPEG over HTTP).
+ * Browsers cannot play RTSP directly.
+ *
+ * Blue Iris (web server):
+ *   http://<PC_IP>:<port>/mjpg/<camera_short_name>/video.mjpg
+ *   Port is often 81 (Settings → Web server). Short name = camera name in Blue Iris (no spaces).
+ *   If login is required: http://user:pass@host:port/mjpg/... (or allow anonymous / use a reverse proxy).
+ *
+ * Local ffmpeg proxy (see scripts/stream-proxy.mjs):
+ *   http://localhost:9999/stream
  */
 
 const ip = import.meta.env.VITE_CAMERA_IP;

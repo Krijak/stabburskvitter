@@ -27,49 +27,36 @@ const StreamImage = styled("img")({
   display: "block",
 });
 
-// export default function CameraFeed() {
-//   const streamUrl = cameraStreamUrl;
-//   const [isConnected, setIsConnected] = useState(false);
-
-//   if (!streamUrl) return null;
-
-//   if (!isConnected) {
-//     return (
-//       <Box sx={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}>
-//         <img
-//           src={streamUrl}
-//           alt=""
-//           crossOrigin="anonymous"
-//           onLoad={() => setIsConnected(true)}
-//         />
-//       </Box>
-//     );
-//   }
-
-//   return (
-//     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
-//       <StreamImage
-//         src={streamUrl}
-//         alt="Direktevideo fra kamera i fuglekassen – PP14 og PP15"
-//         crossOrigin="anonymous"
-//       />
-//     </FeedContainer>
-//   );
-// }
-
 export default function CameraFeed() {
-  const serverIp = "10.52.168.116:81";
-  const cameraShortName = "stabburskvitter";
-  const streamUrl = `http://${serverIp}/mjpg/${cameraShortName}/video.mjpg`;
+  const streamUrl = cameraStreamUrl;
+  const [isConnected, setIsConnected] = useState(false);
+
+  console.log(streamUrl);
+
+  if (!streamUrl) return null;
+
+  if (!isConnected) {
+    return (
+      <Box
+        sx={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }}
+      >
+        <img
+          src={streamUrl}
+          alt=""
+          crossOrigin="anonymous"
+          onLoad={() => setIsConnected(true)}
+        />
+      </Box>
+    );
+  }
 
   return (
-    <div className="camera-container">
-      <h3>Live Feed: {cameraShortName}</h3>
-      <img
+    <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
+      <StreamImage
         src={streamUrl}
-        alt="Camera Stream"
-        style={{ width: "100%", maxWidth: "800px" }}
+        alt="Direktevideo fra kamera i fuglekassen – PP14 og PP15"
+        crossOrigin="anonymous"
       />
-    </div>
+    </FeedContainer>
   );
 }
