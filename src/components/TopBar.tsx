@@ -107,7 +107,8 @@ export default function TopBar() {
           <img
             src={birdhouseIcon}
             alt="Stabbur-ikon"
-            style={{ mixBlendMode: "darken" }}
+            loading="eager"
+            decoding="sync"
           />
         </Stack>
 
