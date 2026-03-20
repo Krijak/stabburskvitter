@@ -17,8 +17,13 @@ import StatusPanel from "./drawer/StatusPanel";
 import OmBlaameisenPanel from "./drawer/OmBlaameisenPanel";
 import OmStabburskvitterPanel from "./drawer/OmStabburskvitterPanel";
 import { statusDataBlåmeis } from "../helpers/data";
+import Fuglene from "./drawer/Fuglene";
 
-export type DrawerId = "status" | "om-blaameisen" | "om-stabburskvitter";
+export type DrawerId =
+  | "status"
+  | "om-blaameisen"
+  | "om-stabburskvitter"
+  | "fuglene";
 
 interface NavItem {
   id: DrawerId;
@@ -27,8 +32,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: "status", label: "STATUS" },
-  { id: "om-blaameisen", label: "BLÅMEISEN" },
-  { id: "om-stabburskvitter", label: "STABBURSKVITTER" },
+  // { id: "om-blaameisen", label: "BLÅMEISEN" },
+  { id: "fuglene", label: "FUGLENE" },
+  { id: "om-stabburskvitter", label: "OM" },
 ];
 
 const Logo = () => (
@@ -213,6 +219,7 @@ export default function TopBar() {
               {openDrawer === "om-stabburskvitter" && (
                 <OmStabburskvitterPanel />
               )}
+              {openDrawer === "fuglene" && <Fuglene />}
             </Stack>
           </Drawer>
         </Box>

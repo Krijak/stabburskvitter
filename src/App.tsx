@@ -8,7 +8,11 @@ import blue_tit_flying from "./img/blue_tit_flying.gif";
 
 export default function App() {
   return (
-    <Stack direction="column" sx={{ minHeight: "100vh", height: "100%" }}>
+    <Stack
+      direction="column"
+      sx={{ minHeight: "100vh", height: "100%" }}
+      bgcolor={"#eef6ee"}
+    >
       <TopBar />
       <MainContent>
         <BackgroundImage
@@ -52,7 +56,7 @@ const Halo = styled(Box)({
   width: "0px",
   height: "0px",
   borderRadius: "50%",
-  boxShadow: "0 0 50px 36px #fffffff2",
+  boxShadow: "0 0 50px 30px #fffffff2",
 });
 
 const MainContent = styled("main")({

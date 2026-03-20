@@ -86,15 +86,23 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
             aria-label="Klekkeperiode fremdrift"
           />
         </Box>
+
         <Typography variant="body2">
           {endLabel.day} {endLabel.month}
         </Typography>
       </Stack>
 
-      <Stack padding={2}>
+      <Stack padding={2} gap={1}>
+        {statusData.fase === "Ingen fugler enda" && (
+          <Typography variant="subtitle1" fontWeight={"bold"}>
+            Vi venter i spenning!
+          </Typography>
+        )}
         <Typography variant="body2">{statusData.description}</Typography>
       </Stack>
-      <FaseProgress fasename={statusData.fase} />
+      {statusData.fase !== "Ingen fugler enda" && (
+        <FaseProgress fasename={statusData.fase} />
+      )}
     </Stack>
   );
 };

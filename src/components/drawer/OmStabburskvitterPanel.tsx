@@ -16,11 +16,26 @@ const OmStabburskvitterPanel = () => {
       </Box>
       <Stack gap={1}>
         <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
-          Om
+          Om Stabburskvitter
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
           Her kommer det livestream fra fuglehuset som henger i bakgården til
           PP14 og PP15
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+          Fuglehuset er egnet for spurver, meiser og finker, og kan også fungere
+          som en fuglemater på vinteren!
+        </Typography>
+      </Stack>
+      <Stack gap={1}>
+        <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+          Kameraet
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+          Kameraet i fuglehuset får strøm fra et solcellepanel, og vil derfor
+          ikke alltid være tilgjengelig. For ordens skyld er mikrofonen i
+          kameraet skrudd av.
         </Typography>
       </Stack>
       <Stack gap={1}>
