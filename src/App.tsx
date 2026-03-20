@@ -32,7 +32,7 @@ export default function App() {
               width="6rem"
               justifyContent="center"
               alignItems="center"
-              paddingBottom={"150px"}
+              paddingBottom={"50px"}
             >
               <Halo />
               <img

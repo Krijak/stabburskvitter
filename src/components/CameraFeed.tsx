@@ -5,6 +5,7 @@ const FeedContainer = styled(Box)(({ theme }) => ({
   position: "relative",
   width: "100%",
   aspectRatio: "670 / 327",
+  maxWidth: "60rem",
   padding: theme.spacing(3),
   overflow: "hidden",
   borderRadius: theme.shape.borderRadius,
