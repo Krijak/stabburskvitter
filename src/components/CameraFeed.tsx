@@ -27,9 +27,8 @@ type StreamStatus = "online" | "offline";
 
 export default function CameraFeed() {
   const streamName = "stabburskvitter";
-  const myIP = "192.168.2.6";
-  const API_URL = `http://${myIP}:9997/v3/paths/list`;
-  const PLAYER_URL = `http://${myIP}:8889/${streamName}`;
+  const API_URL = `https://api.stabburskvitter.no/v3/paths/list`;
+  const PLAYER_URL = `https://camera.stabburskvitter.no/stabburskvitter/`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
 
