@@ -1,4 +1,4 @@
-import { Drawer, Stack, Typography } from "@mui/material";
+import { Collapse, Drawer, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
@@ -31,6 +31,7 @@ export default function CameraFeed() {
   const API_URL = `http://${myIP}:9997/v3/paths/list`;
   const PLAYER_URL = `http://${myIP}:8889/${streamName}`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
+  const [showDrawerContent, setShowDrawerContent] = useState(false);
 
   const checkStatus = async () => {
     try {
@@ -67,9 +68,17 @@ export default function CameraFeed() {
     // Initial check
     checkStatus();
 
-    const interval = setInterval(checkStatus, 50000);
+    const interval = setInterval(checkStatus, 10000);
     return () => clearInterval(interval);
   }, [streamName]);
+
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setShowDrawerContent(true);
+    }, 2000);
+
+    return () => window.clearTimeout(timeout);
+  }, []);
 
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
@@ -91,8 +100,7 @@ export default function CameraFeed() {
           backdrop: { sx: { backgroundColor: "transparent" } },
           paper: {
             sx: {
-              left: "50%",
-              transform: "translateX(-50%)",
+              left: "calc(50% - 7.5rem)",
               width: "15rem",
               backgroundColor: theme.palette.background.paper,
               pt: "5rem",
@@ -110,13 +118,22 @@ export default function CameraFeed() {
               style={{ mixBlendMode: "darken" }}
             />
           </Stack>
-          <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
-            Oida!
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-            Her fikk vi visst ikke kontakt med stabburet vårt! Prøv igjen litt
-            senere
-          </Typography>
+          <Collapse in={showDrawerContent}>
+            <Stack gap={1}>
+              <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+                Oida!
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+                Vi har ikke kontakt med stabburet vårt akkurat nå! Prøv igjen litt
+                senere.
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+                Har det vært overskyet i hele dag, kanskje? Kameraet i stabburet
+                får strøm fra solceller, og trenger litt solskinn for å lade
+                batteriene.
+              </Typography>
+            </Stack>
+          </Collapse>
         </Stack>
       </Drawer>
     </FeedContainer>
