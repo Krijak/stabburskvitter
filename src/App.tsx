@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
 import { Stack } from "@mui/material";
-import background from "./img/background.png";
+// import background from "./img/background.png";
 import blue_tit_flying from "./img/blue_tit_flying.gif";
 
 export default function App() {
@@ -11,16 +11,16 @@ export default function App() {
     <Stack
       direction="column"
       sx={{ minHeight: "100svh", height: "100%" }}
-      bgcolor={"#eef6ee"}
+      bgcolor={"#e7ede7"}
     >
       <TopBar />
       <MainContent>
-        <BackgroundImage
+        {/* <BackgroundImage
           src={background}
           alt=""
           aria-hidden="true"
           loading="eager"
-        />
+        /> */}
         <ContentArea>
           <Stack
             sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
@@ -93,4 +93,5 @@ const CameraFeedWrapper = styled(Box)(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(4),
+  paddingBottom: "150px",
 }));

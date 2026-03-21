@@ -28,11 +28,11 @@ export default function CameraFeed() {
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
       <YouTubeFrame
-        src="https://www.youtube.com/embed/ogH1z3eTi2Q?autoplay=0&mute=1&playsinline=1&rel=0"
+        src="https://www.youtube.com/embed/ogH1z3eTi2Q?autoplay=1&mute=1&playsinline=1&rel=0"
         title="YouTube live stream"
         allow="autoplay; encrypted-media; picture-in-picture"
         allowFullScreen
-        loading="lazy"
+        loading="eager"
       />
     </FeedContainer>
   );
