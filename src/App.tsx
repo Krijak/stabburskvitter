@@ -4,7 +4,6 @@ import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
 import { Stack } from "@mui/material";
 import background from "./img/background.png";
-import blue_tit_flying from "./img/blue_tit_flying.gif";
 
 export default function App() {
   return (
@@ -50,8 +49,6 @@ export default function App() {
     </Stack>
   );
 }
-
-
 
 const MainContent = styled("main")({
   position: "relative",

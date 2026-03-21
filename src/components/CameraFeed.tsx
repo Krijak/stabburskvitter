@@ -1,8 +1,9 @@
-import { Stack, Typography } from "@mui/material";
+import { Drawer, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import blue_tit_flying from "../img/blue_tit_flying.gif"
+import blue_tit_flying from "../img/blue_tit_flying.gif";
+import { theme } from "../theme";
 
 const FeedContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -11,7 +12,6 @@ const FeedContainer = styled(Box)(({ theme }) => ({
   maxWidth: "60rem",
   padding: theme.spacing(3),
   borderRadius: theme.shape.borderRadius,
-
 }));
 
 const PlayerFrame = styled("iframe")({
@@ -45,13 +45,13 @@ export default function CameraFeed() {
         setStreamStatus("online");
       } else {
         if (response.status === 401) {
-          console.log("Authentication failed. Check apiUser/apiPass in mediamtx.yml");
+          console.log(
+            "Authentication failed. Check apiUser/apiPass in mediamtx.yml",
+          );
           setStreamStatus("online");
-        }
-        else if (response.status === 404) {
+        } else if (response.status === 404) {
           setStreamStatus("offline");
-        }
-        else {
+        } else {
           console.log("Stream is not live!", response.status);
           setStreamStatus("offline");
         }
@@ -71,7 +71,6 @@ export default function CameraFeed() {
     return () => clearInterval(interval);
   }, [streamName]);
 
-
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
       {/* <YouTubeFrame
@@ -81,41 +80,53 @@ export default function CameraFeed() {
         allowFullScreen
         loading="eager"
       /> */}
-      {streamStatus === "online" ? (
-        <PlayerFrame src={PLAYER_URL} />
-      ) : (
-        <Stack alignItems={"center"}>
-          <Stack
-            width="6rem"
-            justifyContent="center"
-            alignItems="center"
-            pb={theme => theme.spacing(2)}
-          >
-            <Halo />
+      {streamStatus === "online" && <PlayerFrame src={PLAYER_URL} />}
+      <Drawer
+        anchor="top"
+        open={streamStatus === "offline"}
+        hideBackdrop
+        transitionDuration={{ enter: 300, exit: 300 }}
+        slotProps={{
+          root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+          backdrop: { sx: { backgroundColor: "transparent" } },
+          paper: {
+            sx: {
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "15rem",
+              backgroundColor: theme.palette.background.paper,
+              pt: "5rem",
+              pb: "2rem",
+            },
+          },
+        }}
+      >
+        <Stack gap={2} padding={4} alignItems="center" justifyContent="center">
+          <Stack width="6rem" justifyContent="center" alignItems="center">
             <img
               src={blue_tit_flying}
-              style={{ mixBlendMode: "darken" }}
+              alt=""
               width="100%"
+              style={{ mixBlendMode: "darken" }}
             />
           </Stack>
-          <Stack gap={theme => theme.spacing(2)} bgcolor={"white"} maxWidth={"20rem"} width={"100%"} alignItems={"center"} justifyContent={"center"} borderRadius={"5px"} p={theme => theme.spacing(5)}>
-
-            <Stack gap={1}>
-              <Typography variant="subtitle1" fontWeight={"bold"} textAlign={"center"}>Oida!</Typography>
-              <Typography>Her fikk vi ikke kontakt med stabburet vårt! Prøv igjen litt senere</Typography>
-            </Stack>
-          </Stack>
+          <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+            Oida!
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
+            Her fikk vi visst ikke kontakt med stabburet vårt! Prøv igjen litt
+            senere
+          </Typography>
         </Stack>
-      )}
+      </Drawer>
     </FeedContainer>
   );
 }
 
-
-const Halo = styled(Box)({
-  position: "absolute",
-  width: "0px",
-  height: "0px",
-  borderRadius: "50%",
-  boxShadow: "0 0 50px 30px #fffffff2",
-});
+// const Halo = styled(Box)({
+//   position: "absolute",
+//   width: "0px",
+//   height: "0px",
+//   borderRadius: "50%",
+//   boxShadow: "0 0 50px 30px #fffffff2",
+// });
