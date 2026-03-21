@@ -3,7 +3,7 @@ import { styled } from "@mui/material/styles";
 import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
 import { Stack } from "@mui/material";
-// import background from "./img/background.png";
+import background from "./img/background.png";
 import blue_tit_flying from "./img/blue_tit_flying.gif";
 
 export default function App() {
@@ -15,12 +15,12 @@ export default function App() {
     >
       <TopBar />
       <MainContent>
-        {/* <BackgroundImage
+        <BackgroundImage
           src={background}
           alt=""
           aria-hidden="true"
           loading="eager"
-        /> */}
+        />
         <ContentArea>
           <Stack
             sx={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }}
@@ -28,7 +28,7 @@ export default function App() {
             justifyContent="center"
             zIndex={0}
           >
-            <Stack
+            {/* <Stack
               width="6rem"
               justifyContent="center"
               alignItems="center"
@@ -40,7 +40,7 @@ export default function App() {
                 style={{ mixBlendMode: "darken" }}
                 width="100%"
               />
-            </Stack>
+            </Stack> */}
           </Stack>
           <CameraFeedWrapper>
             <CameraFeed />
@@ -51,13 +51,7 @@ export default function App() {
   );
 }
 
-const Halo = styled(Box)({
-  position: "absolute",
-  width: "0px",
-  height: "0px",
-  borderRadius: "50%",
-  boxShadow: "0 0 50px 30px #fffffff2",
-});
+
 
 const MainContent = styled("main")({
   position: "relative",
@@ -94,4 +88,7 @@ const CameraFeedWrapper = styled(Box)(({ theme }) => ({
   justifyContent: "center",
   padding: theme.spacing(4),
   paddingBottom: "150px",
+  [theme.breakpoints.down("sm")]: {
+    // marginTop: "calc(100svh - 600px)",
+  },
 }));
