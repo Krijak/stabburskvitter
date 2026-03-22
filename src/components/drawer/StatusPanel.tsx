@@ -45,7 +45,8 @@ function getDateProgress(start: Date, end: Date, today: Date): number {
 }
 
 const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
-  const { currentHourForecast, weatherLoading } = useDayPartsWeather();
+  const { currentHourForecast, solarMessage, weatherLoading } =
+    useDayPartsWeather();
   const today = new Date();
   const startDate = statusData.startDate;
   const endDate = new Date(
@@ -111,6 +112,7 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
         <WeatherCurrentHour
           currentHour={currentHourForecast}
           weatherLoading={weatherLoading}
+          solarMessage={solarMessage}
         />
       </Stack>
     </Stack>

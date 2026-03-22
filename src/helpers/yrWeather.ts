@@ -242,6 +242,73 @@ export async function fetchYrCompactForecast(
   return res.json() as Promise<YrCompactResponse>;
 }
 
+/** Met.no Sunrise 3.0 — same CORS rules as locationforecast (no custom User-Agent in browser). */
+export type SunriseSunsetResponse = {
+  properties?: {
+    sunrise?: { time?: string };
+    sunset?: { time?: string };
+  };
+};
+
+/** Local calendar date as YYYY-MM-DD for Met.no `date` query param. */
+export function formatLocalDateForMetNo(d: Date): string {
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, "0");
+  const day = d.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** IANA-style offset for sunrise API, e.g. +01:00, -05:00 */
+export function timezoneOffsetMetNo(d: Date = new Date()): string {
+  const offsetMin = -d.getTimezoneOffset();
+  const sign = offsetMin >= 0 ? "+" : "-";
+  const abs = Math.abs(offsetMin);
+  const h = Math.floor(abs / 60)
+    .toString()
+    .padStart(2, "0");
+  const min = (abs % 60).toString().padStart(2, "0");
+  return `${sign}${h}:${min}`;
+}
+
+export async function fetchSunriseSunset(
+  lat: number,
+  lon: number,
+  dateLocal: string,
+  offset: string,
+): Promise<SunriseSunsetResponse> {
+  const params = new URLSearchParams({
+    lat: lat.toFixed(4),
+    lon: lon.toFixed(4),
+    date: dateLocal,
+    offset,
+  });
+  const url = `https://api.met.no/weatherapi/sunrise/3.0/sun?${params}`;
+  const res = await fetch(url, { cache: "no-store", mode: "cors" });
+  if (!res.ok) {
+    throw new Error(`Sol-API: ${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<SunriseSunsetResponse>;
+}
+
+/**
+ * Before local sunrise / after local sunset for the given day (Met.no times, ISO with offset).
+ * Between sunrise and sunset → null (sun is up).
+ */
+export function solarStatusMessage(
+  now: Date,
+  sunriseISO?: string,
+  sunsetISO?: string,
+): string | null {
+  if (!sunriseISO || !sunsetISO) return null;
+  const rise = new Date(sunriseISO).getTime();
+  const set = new Date(sunsetISO).getTime();
+  const t = now.getTime();
+  if (Number.isNaN(rise) || Number.isNaN(set)) return null;
+  if (t < rise) return "(Solen har ikke stått opp enda)";
+  if (t > set) return "(Solen har gått ned)";
+  return null;
+}
+
 export function summarizeTodayForecast(
   timeseries: YrTimeseriesEntry[] | undefined,
   ref: Date = new Date(),
@@ -341,8 +408,7 @@ export function summarizeCurrentHourForecast(
     timeLabel,
     symbolCode,
     symbolLabel: symbolLabel(symbolCode),
-    airTemperatureC:
-      typeof rawTemp === "number" ? Math.round(rawTemp) : null,
+    airTemperatureC: typeof rawTemp === "number" ? Math.round(rawTemp) : null,
     precipMmNextHour:
       typeof precip === "number" && precip > 0
         ? Math.round(precip * 10) / 10

@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import {
+  fetchSunriseSunset,
   fetchYrCompactForecast,
+  formatLocalDateForMetNo,
+  solarStatusMessage,
   summarizeCurrentHourForecast,
   summarizeDayPartsForecast,
+  timezoneOffsetMetNo,
   type CurrentHourForecast,
   type DayPartsForecast,
 } from "../helpers/yrWeather";
@@ -20,15 +24,24 @@ export function useDayPartsWeather(
     useState<CurrentHourForecast | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
   const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [solarMessage, setSolarMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setWeatherLoading(true);
       setWeatherError(null);
+      setSolarMessage(null);
       try {
-        const data = await fetchYrCompactForecast(lat, lon);
         const now = new Date();
+        const dateLocal = formatLocalDateForMetNo(now);
+        const offset = timezoneOffsetMetNo(now);
+
+        const [data, sun] = await Promise.all([
+          fetchYrCompactForecast(lat, lon),
+          fetchSunriseSunset(lat, lon, dateLocal, offset).catch(() => null),
+        ]);
+
         const summary = summarizeDayPartsForecast(
           data.properties?.timeseries,
           now,
@@ -37,9 +50,18 @@ export function useDayPartsWeather(
           data.properties?.timeseries,
           now,
         );
+        const solar =
+          sun &&
+          solarStatusMessage(
+            now,
+            sun.properties?.sunrise?.time,
+            sun.properties?.sunset?.time,
+          );
+
         if (!cancelled) {
           setDayPartsWeather(summary);
           setCurrentHourForecast(current);
+          setSolarMessage(solar ?? null);
         }
       } catch (e) {
         if (!cancelled) {
@@ -48,6 +70,7 @@ export function useDayPartsWeather(
           );
           setDayPartsWeather(null);
           setCurrentHourForecast(null);
+          setSolarMessage(null);
         }
       } finally {
         if (!cancelled) setWeatherLoading(false);
@@ -61,6 +84,7 @@ export function useDayPartsWeather(
   return {
     dayPartsWeather,
     currentHourForecast,
+    solarMessage,
     weatherLoading,
     weatherError,
   };

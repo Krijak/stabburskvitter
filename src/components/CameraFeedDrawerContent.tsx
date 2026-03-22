@@ -7,12 +7,14 @@ export type CameraFeedDrawerContentProps = {
   showDelayedContent: boolean;
   dayPartsWeather: DayPartsForecast | null;
   weatherLoading: boolean;
+  solarMessage?: string | null;
 };
 
 export default function CameraFeedDrawerContent({
   showDelayedContent,
   dayPartsWeather,
   weatherLoading,
+  solarMessage,
 }: CameraFeedDrawerContentProps) {
   return (
     <Stack gap={2} padding={4} alignItems="center" justifyContent="center">
@@ -38,11 +40,20 @@ export default function CameraFeedDrawerContent({
             strøm fra solceller, og trenger litt solskinn for å lade batteriene.
           </Typography>
         </Stack>
-        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }}>
+        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }} gap={1}>
           <WeatherContent
             dayPartsWeather={dayPartsWeather}
             weatherLoading={weatherLoading}
           />
+          {solarMessage ? (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              textAlign="center"
+            >
+              {solarMessage}
+            </Typography>
+          ) : null}
         </Stack>
       </Collapse>
     </Stack>

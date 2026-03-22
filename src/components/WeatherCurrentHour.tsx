@@ -9,11 +9,14 @@ const MET_NO_ICON = (symbolCode: string) =>
 export type WeatherCurrentHourProps = {
   currentHour: CurrentHourForecast | null;
   weatherLoading: boolean;
+  /** From Met.no sunrise API: before sunrise / after sunset; hidden while sun is up. */
+  solarMessage?: string | null;
 };
 
 export default function WeatherCurrentHour({
   currentHour,
   weatherLoading,
+  solarMessage,
 }: WeatherCurrentHourProps) {
   if (weatherLoading || !currentHour) return null;
 
@@ -27,6 +30,11 @@ export default function WeatherCurrentHour({
         <Typography variant="subtitle1" fontWeight={"bold"}>
           Været akkurat nå:
         </Typography>
+        {solarMessage ? (
+          <Typography variant="caption" color="text.secondary">
+            {solarMessage}
+          </Typography>
+        ) : null}
         <Typography variant="caption">{currentHour.symbolLabel}</Typography>
         <Box
           component="img"

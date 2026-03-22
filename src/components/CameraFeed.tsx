@@ -34,7 +34,8 @@ export default function CameraFeed() {
   const PLAYER_URL = `https://camera.stabburskvitter.no/${streamName}/`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
-  const { dayPartsWeather, weatherLoading } = useDayPartsWeather();
+  const { dayPartsWeather, solarMessage, weatherLoading } =
+    useDayPartsWeather();
   const { isTopBarPanelOpen } = useTopBarPanelDrawer();
 
   const cameraOfflineDrawerOpen =
@@ -106,6 +107,7 @@ export default function CameraFeed() {
           showDelayedContent={showDrawerContent}
           dayPartsWeather={dayPartsWeather}
           weatherLoading={weatherLoading}
+          solarMessage={solarMessage}
         />
       </Drawer>
     </FeedContainer>
