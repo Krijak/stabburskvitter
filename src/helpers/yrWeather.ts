@@ -2,10 +2,9 @@
  * Norwegian Meteorological Institute (Met.no) Locationforecast 2.0 — same data as Yr.
  * @see https://api.met.no/doc/locationforecast/HowTO
  *
- * Terms: identify your app with a valid User-Agent (domain/contact).
+ * Browser builds use the engine’s default User-Agent (Met.no terms); a custom UA in
+ * `fetch()` breaks CORS on Safari / iOS WebKit — see `fetchYrCompactForecast`.
  */
-
-const YR_USER_AGENT = "Stabburskvitter/1.0 https://stabburskvitter.no";
 
 export type YrTimeseriesEntry = {
   time: string;
@@ -229,11 +228,14 @@ export async function fetchYrCompactForecast(
   lon: number,
 ): Promise<YrCompactResponse> {
   const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": YR_USER_AGENT,
-    },
-  });
+  /**
+   * Do not set `User-Agent` in browser fetch: Safari / iOS Chrome (WebKit) treat it as a
+   * non-simple header → CORS preflight. api.met.no does not allow `user-agent` in
+   * Access-Control-Allow-Headers, so the request fails only on those browsers. Desktop
+   * Chrome drops the header anyway. Met.no still receives the browser’s built-in UA.
+   * @see https://api.met.no/doc/locationforecast/HowTO
+   */
+  const res = await fetch(url, { cache: "no-store", mode: "cors" });
   if (!res.ok) {
     throw new Error(`Vær-API: ${res.status} ${res.statusText}`);
   }

@@ -3,6 +3,9 @@ import Box from "@mui/material/Box";
 import type { CurrentHourForecast } from "../helpers/yrWeather";
 import { getWeatherIconUrl } from "../helpers/weatherIcons";
 
+const MET_NO_ICON = (symbolCode: string) =>
+  `https://api.met.no/weatherapi/weathericon/2.0/?symbol=${encodeURIComponent(symbolCode)}&content_type=image/png`;
+
 export type WeatherCurrentHourProps = {
   currentHour: CurrentHourForecast | null;
   weatherLoading: boolean;
@@ -14,7 +17,9 @@ export default function WeatherCurrentHour({
 }: WeatherCurrentHourProps) {
   if (weatherLoading || !currentHour) return null;
 
-  const iconSrc = getWeatherIconUrl(currentHour.symbolCode);
+  const iconSrc =
+    getWeatherIconUrl(currentHour.symbolCode) ??
+    MET_NO_ICON(currentHour.symbolCode);
 
   return (
     <Stack direction="column" alignItems="center" sx={{ width: "100%" }}>
@@ -27,6 +32,8 @@ export default function WeatherCurrentHour({
           component="img"
           src={iconSrc}
           alt=""
+          loading="lazy"
+          decoding="async"
           sx={{ width: 36, height: 36, flexShrink: 0 }}
         />
       </Stack>

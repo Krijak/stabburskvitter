@@ -8,9 +8,6 @@ export type WeatherContentProps = {
   weatherLoading: boolean;
 };
 
-const MET_NO_ICON = (symbolCode: string) =>
-  `https://api.met.no/weatherapi/weathericon/2.0/?symbol=${encodeURIComponent(symbolCode)}&content_type=image/png`;
-
 export default function WeatherContent({
   dayPartsWeather,
   weatherLoading,
@@ -20,19 +17,25 @@ export default function WeatherContent({
   return (
     <Stack
       gap={1}
-      sx={{ width: "100%" }}
+      sx={{ width: "100%", minWidth: 0 }}
       flexDirection="row"
       justifyContent="space-between"
     >
       {dayPartsWeather.parts.map((part) => {
-        const iconSrc =
-          getWeatherIconUrl(part.symbolCode) ?? MET_NO_ICON(part.symbolCode);
+        const iconSrc = getWeatherIconUrl(part.symbolCode);
         return (
-          <Stack key={part.id} direction="column" alignItems="center">
+          <Stack
+            key={part.id}
+            direction="column"
+            alignItems="center"
+            sx={{ minWidth: 0, flex: "1 1 0" }}
+          >
             <Box
               component="img"
               src={iconSrc}
               alt=""
+              loading="lazy"
+              decoding="async"
               sx={{ width: 26, height: 26, flexShrink: 0 }}
             />
             <Stack alignItems="center" textAlign="center">

@@ -38,7 +38,7 @@ export default function CameraFeedDrawerContent({
             strøm fra solceller, og trenger litt solskinn for å lade batteriene.
           </Typography>
         </Stack>
-        <Stack mt={3}>
+        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }}>
           <WeatherContent
             dayPartsWeather={dayPartsWeather}
             weatherLoading={weatherLoading}

@@ -65,7 +65,6 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
           style={{ mixBlendMode: "darken" }}
         />
       </Box>
-
       <Stack
         width={"100%"}
         flexDirection="row"
@@ -93,7 +92,6 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
           {endLabel.day} {endLabel.month}
         </Typography>
       </Stack>
-
       <Stack padding={2} gap={1}>
         {statusData.fase === "Ingen fugler enda" && (
           <Typography
