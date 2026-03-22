@@ -1,9 +1,18 @@
-import { Collapse, Drawer, Stack, Typography } from "@mui/material";
+import { Drawer } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import blue_tit_flying from "../img/blue_tit_flying.gif";
+import CameraFeedDrawerContent from "./CameraFeedDrawerContent";
+import {
+  fetchYrCompactForecast,
+  summarizeDayPartsForecast,
+  type DayPartsForecast,
+} from "../helpers/yrWeather";
 import { theme } from "../theme";
+
+
+const WEATHER_LAT = 59.92;
+const WEATHER_LON = 10.73;
 
 const FeedContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -28,9 +37,14 @@ type StreamStatus = "online" | "offline";
 export default function CameraFeed() {
   const streamName = "stabburskvitter";
   const API_URL = `https://api.stabburskvitter.no/v3/paths/list`;
-  const PLAYER_URL = `https://camera.stabburskvitter.no/stabburskvitter/`;
+  const PLAYER_URL = `https://camera.stabburskvitter.no/${streamName}/`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
+  const [dayPartsWeather, setDayPartsWeather] = useState<DayPartsForecast | null>(
+    null,
+  );
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
 
   const checkStatus = async () => {
     try {
@@ -41,7 +55,8 @@ export default function CameraFeed() {
       const stream = data.items?.find((item: any) => item.name === streamName);
 
       if (stream && stream.ready) {
-        console.log("Stream is live!");
+        console.log("Stream is live!", stream);
+        console.log(stream);
         setStreamStatus("online");
       } else {
         if (response.status === 401) {
@@ -49,17 +64,11 @@ export default function CameraFeed() {
             "Authentication failed. Check apiUser/apiPass in mediamtx.yml",
           );
           setStreamStatus("online");
-        } else if (response.status === 404) {
-          setStreamStatus("offline");
-        } else {
-          console.log("Stream is not live!", response.status);
-          setStreamStatus("offline");
         }
       }
     } catch (error) {
       console.log("Error checking stream status:", error);
       setStreamStatus("offline");
-      console.log(streamStatus);
     }
   };
 
@@ -79,6 +88,36 @@ export default function CameraFeed() {
     return () => window.clearTimeout(timeout);
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setWeatherLoading(true);
+      setWeatherError(null);
+      try {
+        const data = await fetchYrCompactForecast(WEATHER_LAT, WEATHER_LON);
+        const summary = summarizeDayPartsForecast(
+          data.properties?.timeseries,
+          new Date(),
+        );
+        if (!cancelled) {
+          setDayPartsWeather(summary);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setWeatherError(
+            e instanceof Error ? e.message : "Kunne ikke hente værvarsel.",
+          );
+          setDayPartsWeather(null);
+        }
+      } finally {
+        if (!cancelled) setWeatherLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
       {/* <YouTubeFrame
@@ -91,7 +130,8 @@ export default function CameraFeed() {
       {streamStatus === "online" && <PlayerFrame src={PLAYER_URL} />}
       <Drawer
         anchor="top"
-        open={streamStatus === "offline"}
+        open={true}
+        // open={streamStatus === "offline"}
         hideBackdrop
         transitionDuration={{ enter: 300, exit: 300 }}
         slotProps={{
@@ -108,32 +148,11 @@ export default function CameraFeed() {
           },
         }}
       >
-        <Stack gap={2} padding={4} alignItems="center" justifyContent="center">
-          <Stack width="6rem" justifyContent="center" alignItems="center">
-            <img
-              src={blue_tit_flying}
-              alt=""
-              width="100%"
-              style={{ mixBlendMode: "darken" }}
-            />
-          </Stack>
-          <Collapse in={showDrawerContent}>
-            <Stack gap={1}>
-              <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
-                Oida!
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-                Vi har ikke kontakt med stabburet vårt akkurat nå! Prøv igjen litt
-                senere.
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
-                Har det vært overskyet i hele dag, kanskje? Kameraet i stabburet
-                får strøm fra solceller, og trenger litt solskinn for å lade
-                batteriene.
-              </Typography>
-            </Stack>
-          </Collapse>
-        </Stack>
+        <CameraFeedDrawerContent
+          showDelayedContent={showDrawerContent}
+          dayPartsWeather={dayPartsWeather}
+          weatherLoading={weatherLoading}
+        />
       </Drawer>
     </FeedContainer>
   );
