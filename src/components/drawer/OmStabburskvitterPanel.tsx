@@ -19,8 +19,8 @@ const OmStabburskvitterPanel = () => {
           Om Stabburskvitter
         </Typography>
         <Typography variant="body2" color="text.secondary" flex={1}>
-          Her kommer det livestream fra fuglehuset som henger i bakgården til
-          PP14 og PP15
+          Dette er en livestream fra fuglehuset som henger i bakgården til PP14
+          og PP15.
         </Typography>
         <Typography variant="body2" color="text.secondary" flex={1}>
           Fuglehuset er egnet for spurver, meiser og finker, og kan også fungere

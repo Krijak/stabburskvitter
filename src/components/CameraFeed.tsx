@@ -10,9 +10,10 @@ import {
 } from "../helpers/yrWeather";
 import { theme } from "../theme";
 
-
 const WEATHER_LAT = 59.92;
 const WEATHER_LON = 10.73;
+
+const STREAM_PATHS_LIST_URL = "https://api.stabburskvitter.no/v3/paths/list";
 
 const FeedContainer = styled(Box)(({ theme }) => ({
   position: "relative",
@@ -36,47 +37,43 @@ type StreamStatus = "online" | "offline";
 
 export default function CameraFeed() {
   const streamName = "stabburskvitter";
-  const API_URL = `https://api.stabburskvitter.no/v3/paths/list`;
   const PLAYER_URL = `https://camera.stabburskvitter.no/${streamName}/`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
-  const [dayPartsWeather, setDayPartsWeather] = useState<DayPartsForecast | null>(
-    null,
-  );
+  const [dayPartsWeather, setDayPartsWeather] =
+    useState<DayPartsForecast | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(true);
-  const [weatherError, setWeatherError] = useState<string | null>(null);
-
-  const checkStatus = async () => {
-    try {
-      const response = await fetch(API_URL);
-      const data = await response.json();
-
-      // Check if the path exists and is currently "ready" (active source)
-      const stream = data.items?.find((item: any) => item.name === streamName);
-
-      if (stream && stream.ready) {
-        console.log("Stream is live!", stream);
-        console.log(stream);
-        setStreamStatus("online");
-      } else {
-        if (response.status === 401) {
-          console.log(
-            "Authentication failed. Check apiUser/apiPass in mediamtx.yml",
-          );
-          setStreamStatus("online");
-        }
-      }
-    } catch (error) {
-      console.log("Error checking stream status:", error);
-      setStreamStatus("offline");
-    }
-  };
+  const [, setWeatherError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Initial check
-    checkStatus();
+    const checkStatus = async () => {
+      try {
+        const response = await fetch(STREAM_PATHS_LIST_URL);
+        const data = await response.json();
 
-    const interval = setInterval(checkStatus, 10000);
+        const stream = data.items?.find(
+          (item: { name: string; ready?: boolean }) => item.name === streamName,
+        );
+
+        if (stream && stream.ready) {
+          console.log("Stream is live!", stream);
+          setStreamStatus("online");
+        } else {
+          if (response.status === 401) {
+            console.log(
+              "Authentication failed. Check apiUser/apiPass in mediamtx.yml",
+            );
+            setStreamStatus("online");
+          }
+        }
+      } catch (error) {
+        console.log("Error checking stream status:", error);
+        setStreamStatus("offline");
+      }
+    };
+
+    void checkStatus();
+    const interval = setInterval(() => void checkStatus(), 10000);
     return () => clearInterval(interval);
   }, [streamName]);
 
@@ -120,18 +117,10 @@ export default function CameraFeed() {
 
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
-      {/* <YouTubeFrame
-        src="https://www.youtube.com/embed/ogH1z3eTi2Q?autoplay=1&mute=1&playsinline=1&rel=0"
-        title="YouTube live stream"
-        allow="autoplay; encrypted-media; picture-in-picture"
-        allowFullScreen
-        loading="eager"
-      /> */}
       {streamStatus === "online" && <PlayerFrame src={PLAYER_URL} />}
       <Drawer
         anchor="top"
-        open={true}
-        // open={streamStatus === "offline"}
+        open={streamStatus === "offline"}
         hideBackdrop
         transitionDuration={{ enter: 300, exit: 300 }}
         slotProps={{
@@ -157,11 +146,3 @@ export default function CameraFeed() {
     </FeedContainer>
   );
 }
-
-// const Halo = styled(Box)({
-//   position: "absolute",
-//   width: "0px",
-//   height: "0px",
-//   borderRadius: "50%",
-//   boxShadow: "0 0 50px 30px #fffffff2",
-// });

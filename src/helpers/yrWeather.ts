@@ -128,16 +128,60 @@ const DAY_PART_WINDOWS: {
   /** Prefer symbol from forecast step closest to this hour (local) */
   symbolAnchorHour: number;
 }[] = [
-    { id: "morgen", title: "Morgen", hourMin: 6, hourMax: 11, symbolAnchorHour: 9 },
-    {
-      id: "etterMiddag",
-      title: "Ettermiddag",
-      hourMin: 12,
-      hourMax: 17,
-      symbolAnchorHour: 15,
-    },
-    { id: "kveld", title: "Kveld", hourMin: 18, hourMax: 23, symbolAnchorHour: 21 },
-  ];
+  {
+    id: "morgen",
+    title: "Morgen",
+    hourMin: 6,
+    hourMax: 11,
+    symbolAnchorHour: 9,
+  },
+  {
+    id: "etterMiddag",
+    title: "Ettermiddag",
+    hourMin: 12,
+    hourMax: 17,
+    symbolAnchorHour: 15,
+  },
+  {
+    id: "kveld",
+    title: "Kveld",
+    hourMin: 18,
+    hourMax: 23,
+    symbolAnchorHour: 21,
+  },
+];
+
+/**
+ * Hourly steps for past parts of today are often missing from the compact API.
+ * Fall back to the forecast step on the same local day closest to the part's anchor hour.
+ */
+function entriesForDayPartWindow(
+  timeseries: YrTimeseriesEntry[],
+  todayEntries: YrTimeseriesEntry[],
+  window: (typeof DAY_PART_WINDOWS)[number],
+  ref: Date,
+): YrTimeseriesEntry[] {
+  const slice = todayEntries.filter((e) => {
+    const h = localHour(e.time);
+    return h >= window.hourMin && h <= window.hourMax;
+  });
+  if (slice.length > 0) return slice;
+
+  const target = new Date(ref);
+  target.setHours(window.symbolAnchorHour, 0, 0, 0);
+  const targetMs = target.getTime();
+
+  const dayPool = timeseries.filter((e) => isSameLocalCalendarDay(e.time, ref));
+  const pool = dayPool.length > 0 ? dayPool : timeseries;
+  if (!pool.length) return [];
+
+  const closest = pool.reduce((best, e) => {
+    const t = new Date(e.time).getTime();
+    const bestT = new Date(best.time).getTime();
+    return Math.abs(t - targetMs) < Math.abs(bestT - targetMs) ? e : best;
+  });
+  return [closest];
+}
 
 function summarizePartEntries(
   entries: YrTimeseriesEntry[],
@@ -202,7 +246,9 @@ export function summarizeTodayForecast(
 ): TodayForecastSummary | null {
   if (!timeseries?.length) return null;
 
-  const todayEntries = timeseries.filter((e) => isSameLocalCalendarDay(e.time, ref));
+  const todayEntries = timeseries.filter((e) =>
+    isSameLocalCalendarDay(e.time, ref),
+  );
   if (!todayEntries.length) return null;
 
   const temps: number[] = [];
@@ -219,7 +265,7 @@ export function summarizeTodayForecast(
 
   const noon = new Date(ref);
   noon.setHours(12, 0, 0, 0);
-  let symbolEntry = todayEntries.reduce((best, e) => {
+  const symbolEntry = todayEntries.reduce((best, e) => {
     const t = new Date(e.time).getTime();
     const bestT = new Date(best.time).getTime();
     return Math.abs(t - noon.getTime()) < Math.abs(bestT - noon.getTime())
@@ -257,7 +303,9 @@ export function summarizeDayPartsForecast(
 ): DayPartsForecast | null {
   if (!timeseries?.length) return null;
 
-  const todayEntries = timeseries.filter((e) => isSameLocalCalendarDay(e.time, ref));
+  const todayEntries = timeseries.filter((e) =>
+    isSameLocalCalendarDay(e.time, ref),
+  );
   if (!todayEntries.length) return null;
 
   const dateLabel = ref.toLocaleDateString("nb-NO", {
@@ -269,19 +317,18 @@ export function summarizeDayPartsForecast(
   const parts: DayPartSummary[] = [];
 
   for (const window of DAY_PART_WINDOWS) {
-    const slice = todayEntries.filter((e) => {
-      const h = localHour(e.time);
-      return h >= window.hourMin && h <= window.hourMax;
-    });
+    const slice = entriesForDayPartWindow(
+      timeseries,
+      todayEntries,
+      window,
+      ref,
+    );
     const summary = summarizePartEntries(slice, window.symbolAnchorHour, ref);
     if (summary) {
       parts.push({
         id: window.id,
         title: window.title,
-        timeRangeLabel: formatDayPartTimeRange(
-          window.hourMin,
-          window.hourMax,
-        ),
+        timeRangeLabel: formatDayPartTimeRange(window.hourMin, window.hourMax),
         ...summary,
       });
     }

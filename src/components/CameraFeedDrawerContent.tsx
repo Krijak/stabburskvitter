@@ -2,11 +2,7 @@ import { Collapse, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import blue_tit_flying from "../img/blue_tit_flying.gif";
 import type { DayPartsForecast } from "../helpers/yrWeather";
-
-const WeatherImage = () => {
-
-
-};
+import { getWeatherIconUrl } from "../helpers/weatherIcons";
 
 export type CameraFeedDrawerContentProps = {
   showDelayedContent: boolean;
@@ -44,33 +40,34 @@ export default function CameraFeedDrawerContent({
           </Typography>
         </Stack>
         <Stack mt={3}>
-
           {!weatherLoading && dayPartsWeather && (
-            <Stack gap={1} sx={{ width: "100%" }} flexDirection={"row"} justifyContent={"space-between"}>
-
-              {dayPartsWeather.parts.map((part) => (
-                <Stack
-                  key={part.id}
-                  direction="column"
-                  gap={1}
-                  alignItems="center"
-                >
-                  <Box
-                    component="img"
-                    src={`https://api.met.no/weatherapi/weathericon/2.0/?symbol=${encodeURIComponent(part.symbolCode)}&content_type=image/png`}
-                    alt=""
-                    sx={{ width: 36, height: 36, flexShrink: 0 }}
-                  />
-                  <Stack alignItems={"center"} textAlign={"center"}>
-                    <Typography variant="caption">
-                      {part.timeRangeLabel}
-                    </Typography>
-                    <Typography variant="caption">
-                      {part.symbolLabel}
-                    </Typography>
+            <Stack
+              gap={1}
+              sx={{ width: "100%" }}
+              flexDirection={"row"}
+              justifyContent={"space-between"}
+            >
+              {dayPartsWeather.parts.map((part) => {
+                const iconSrc = getWeatherIconUrl(part.symbolCode);
+                return (
+                  <Stack key={part.id} direction="column" alignItems="center">
+                    <Box
+                      component="img"
+                      src={iconSrc}
+                      alt=""
+                      sx={{ width: 26, height: 26, flexShrink: 0 }}
+                    />
+                    <Stack alignItems={"center"} textAlign={"center"}>
+                      <Typography variant="caption" fontSize={"0.75rem"}>
+                        {part.timeRangeLabel}
+                      </Typography>
+                      <Typography variant="caption">
+                        {part.symbolLabel}
+                      </Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              ))}
+                );
+              })}
             </Stack>
           )}
         </Stack>
