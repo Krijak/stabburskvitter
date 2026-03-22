@@ -4,9 +4,11 @@ import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
 import { Stack } from "@mui/material";
 import background from "./img/background.png";
+import { TopBarPanelDrawerProvider } from "./context/TopBarPanelDrawerContext";
 
 export default function App() {
   return (
+    <TopBarPanelDrawerProvider>
     <Stack
       direction="column"
       sx={{ minHeight: "100svh", height: "100%" }}
@@ -33,6 +35,7 @@ export default function App() {
         </ContentArea>
       </MainContent>
     </Stack>
+    </TopBarPanelDrawerProvider>
   );
 }
 

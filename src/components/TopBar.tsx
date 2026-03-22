@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -18,6 +18,7 @@ import OmBlaameisenPanel from "./drawer/OmBlaameisenPanel";
 import OmStabburskvitterPanel from "./drawer/OmStabburskvitterPanel";
 import { statusDataBlåmeis } from "../helpers/data";
 import Fuglene from "./drawer/Fuglene";
+import { useTopBarPanelDrawer } from "../context/TopBarPanelDrawerContext";
 
 export type DrawerId =
   | "status"
@@ -82,8 +83,13 @@ const Logo = () => (
 export default function TopBar() {
   const [navListOpen, setNavListOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState<DrawerId | null>(null);
+  const { setTopBarPanelOpen } = useTopBarPanelDrawer();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    setTopBarPanelOpen(openDrawer !== null);
+  }, [openDrawer, setTopBarPanelOpen]);
 
   const openPanelDrawer = (id: DrawerId) => {
     setNavListOpen(false);

@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import CameraFeedDrawerContent from "./CameraFeedDrawerContent";
 import { useDayPartsWeather } from "../hooks/useDayPartsWeather";
+import { useTopBarPanelDrawer } from "../context/TopBarPanelDrawerContext";
 import { theme } from "../theme";
 
 const STREAM_PATHS_LIST_URL = "https://api.stabburskvitter.no/v3/paths/list";
@@ -34,6 +35,10 @@ export default function CameraFeed() {
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
   const { dayPartsWeather, weatherLoading } = useDayPartsWeather();
+  const { isTopBarPanelOpen } = useTopBarPanelDrawer();
+
+  const cameraOfflineDrawerOpen =
+    streamStatus === "offline" && !isTopBarPanelOpen;
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -80,7 +85,7 @@ export default function CameraFeed() {
       {streamStatus === "online" && <PlayerFrame src={PLAYER_URL} />}
       <Drawer
         anchor="top"
-        open={streamStatus === "offline"}
+        open={cameraOfflineDrawerOpen}
         hideBackdrop
         transitionDuration={{ enter: 300, exit: 300 }}
         slotProps={{
