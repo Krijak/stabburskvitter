@@ -90,7 +90,8 @@ export default function CameraFeed() {
         hideBackdrop
         transitionDuration={{ enter: 300, exit: 300 }}
         slotProps={{
-          root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+          /* Below mobile nav drawer and AppBar (same tier as TopBar content panel) */
+          root: { sx: { zIndex: theme.zIndex.appBar - 2 } },
           backdrop: { sx: { backgroundColor: "transparent" } },
           paper: {
             sx: {

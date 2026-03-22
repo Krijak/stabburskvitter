@@ -37,23 +37,24 @@ export default function CameraFeedDrawerContent({
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
             Har det vært overskyet i hele dag, kanskje? Kameraet i stabburet får
-            strøm fra solceller, og trenger litt solskinn for å lade batteriene.
+            strøm fra et solcellepanel, og trenger litt solskinn for å lade
+            batteriet.
           </Typography>
         </Stack>
-        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }} gap={1}>
-          <WeatherContent
-            dayPartsWeather={dayPartsWeather}
-            weatherLoading={weatherLoading}
-          />
+        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }}>
+          <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+            Været i dag
+          </Typography>
           {solarMessage ? (
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              textAlign="center"
-            >
+            <Typography variant="caption" color="text.secondary">
               {solarMessage}
             </Typography>
           ) : null}
+          <WeatherContent
+            sx={{ pt: 1 }}
+            dayPartsWeather={dayPartsWeather}
+            weatherLoading={weatherLoading}
+          />
         </Stack>
       </Collapse>
     </Stack>

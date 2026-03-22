@@ -2,22 +2,26 @@ import { Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import type { DayPartsForecast } from "../helpers/yrWeather";
 import { getWeatherIconUrl } from "../helpers/weatherIcons";
+import type { SxProps } from "@mui/material/styles";
+import type { Theme } from "@mui/material/styles";
 
 export type WeatherContentProps = {
   dayPartsWeather: DayPartsForecast | null;
   weatherLoading: boolean;
+  sx?: SxProps<Theme>;
 };
 
 export default function WeatherContent({
   dayPartsWeather,
   weatherLoading,
+  sx,
 }: WeatherContentProps) {
   if (weatherLoading || !dayPartsWeather) return null;
 
   return (
     <Stack
       gap={1}
-      sx={{ width: "100%", minWidth: 0 }}
+      sx={{ width: "100%", minWidth: 0, ...sx }}
       flexDirection="row"
       justifyContent="space-between"
     >
@@ -30,6 +34,12 @@ export default function WeatherContent({
             alignItems="center"
             sx={{ minWidth: 0, flex: "1 1 0" }}
           >
+            <Stack alignItems="center" textAlign="center">
+              <Typography variant="caption">{part.symbolLabel}</Typography>
+              <Typography variant="caption" fontSize="0.75rem">
+                {part.timeRangeLabel}
+              </Typography>
+            </Stack>
             <Box
               component="img"
               src={iconSrc}
@@ -38,12 +48,6 @@ export default function WeatherContent({
               decoding="async"
               sx={{ width: 26, height: 26, flexShrink: 0 }}
             />
-            <Stack alignItems="center" textAlign="center">
-              <Typography variant="caption" fontSize="0.75rem">
-                {part.timeRangeLabel}
-              </Typography>
-              <Typography variant="caption">{part.symbolLabel}</Typography>
-            </Stack>
           </Stack>
         );
       })}

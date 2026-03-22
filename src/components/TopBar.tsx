@@ -144,6 +144,7 @@ export default function TopBar() {
                 open={navListOpen}
                 onClose={() => setNavListOpen(false)}
                 slotProps={{
+                  /* Below AppBar, above content/camera drawers */
                   root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
                   backdrop: { sx: { backgroundColor: "transparent" } },
                   paper: {
@@ -212,7 +213,8 @@ export default function TopBar() {
             onClose={closePanelDrawer}
             transitionDuration={{ enter: 300, exit: 300 }}
             slotProps={{
-              root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+              /* Below nav drawer and AppBar */
+              root: { sx: { zIndex: theme.zIndex.appBar - 2 } },
               backdrop: { sx: { backgroundColor: "transparent" } },
               paper: {
                 sx: {
