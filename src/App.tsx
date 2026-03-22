@@ -26,21 +26,7 @@ export default function App() {
             alignItems="center"
             justifyContent="center"
             zIndex={0}
-          >
-            {/* <Stack
-              width="6rem"
-              justifyContent="center"
-              alignItems="center"
-              paddingBottom={"50px"}
-            >
-              <Halo />
-              <img
-                src={blue_tit_flying}
-                style={{ mixBlendMode: "darken" }}
-                width="100%"
-              />
-            </Stack> */}
-          </Stack>
+          ></Stack>
           <CameraFeedWrapper>
             <CameraFeed />
           </CameraFeedWrapper>

@@ -294,6 +294,60 @@ export function summarizeTodayForecast(
   };
 }
 
+/** Single step closest to “now” for current conditions */
+export type CurrentHourForecast = {
+  /** Local time for this forecast step */
+  timeLabel: string;
+  symbolCode: string;
+  symbolLabel: string;
+  airTemperatureC: number | null;
+  precipMmNextHour?: number;
+};
+
+/**
+ * Picks the timeseries step whose timestamp is closest to `ref` (default: now)
+ * and returns symbol + temperature for that hour.
+ */
+export function summarizeCurrentHourForecast(
+  timeseries: YrTimeseriesEntry[] | undefined,
+  ref: Date = new Date(),
+): CurrentHourForecast | null {
+  if (!timeseries?.length) return null;
+
+  const refMs = ref.getTime();
+  const withInstantTemp = timeseries.filter(
+    (e) => typeof e.data.instant?.details?.air_temperature === "number",
+  );
+  const pool = withInstantTemp.length > 0 ? withInstantTemp : timeseries;
+
+  const closest = pool.reduce((best, e) => {
+    const t = new Date(e.time).getTime();
+    const bestT = new Date(best.time).getTime();
+    return Math.abs(t - refMs) < Math.abs(bestT - refMs) ? e : best;
+  });
+
+  const symbolCode = pickSymbol(closest) ?? "unknown";
+  const rawTemp = closest.data.instant?.details?.air_temperature;
+  const precip = closest.data.next_1_hours?.details?.precipitation_amount;
+
+  const timeLabel = new Date(closest.time).toLocaleTimeString("nb-NO", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return {
+    timeLabel,
+    symbolCode,
+    symbolLabel: symbolLabel(symbolCode),
+    airTemperatureC:
+      typeof rawTemp === "number" ? Math.round(rawTemp) : null,
+    precipMmNextHour:
+      typeof precip === "number" && precip > 0
+        ? Math.round(precip * 10) / 10
+        : undefined,
+  };
+}
+
 /**
  * Today's forecast split into Morgen (06–11), Etter middag (12–17), Kveld (18–23) in local time.
  */

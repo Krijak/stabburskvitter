@@ -208,7 +208,7 @@ export default function TopBar() {
                 sx: {
                   left: "unset",
                   right: "2rem",
-                  width: "15rem",
+                  width: "15.5rem",
                   backgroundColor: theme.palette.background.paper,
                   pt: "5rem",
                   pb: "2rem",
