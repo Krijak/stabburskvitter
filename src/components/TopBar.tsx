@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import birdhouseIcon from "../img/stabbur_icon.svg";
+import birdhouseIcon from "../img/stabbur_icon.png";
 import StatusPanel from "./drawer/StatusPanel";
 import OmBlaameisenPanel from "./drawer/OmBlaameisenPanel";
 import OmStabburskvitterPanel from "./drawer/OmStabburskvitterPanel";
@@ -104,12 +104,16 @@ export default function TopBar() {
         }}
       >
         <Stack justifyContent="center" sx={{ justifySelf: "start" }}>
-          <img
-            src={birdhouseIcon}
-            alt="Stabbur-ikon"
-            loading="eager"
-            decoding="sync"
-          />
+          <Box width={"3.5rem"}>
+            <img
+              src={birdhouseIcon}
+              width={"100%"}
+              style={{ mixBlendMode: "darken" }}
+              alt="Stabbur-ikon"
+              loading="eager"
+              decoding="sync"
+            />
+          </Box>
         </Stack>
 
         <Box sx={{ justifySelf: "center" }}>
