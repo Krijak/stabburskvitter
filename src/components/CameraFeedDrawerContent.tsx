@@ -45,11 +45,6 @@ export default function CameraFeedDrawerContent({
           <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
             Været i dag
           </Typography>
-          {solarMessage ? (
-            <Typography variant="caption" color="text.secondary">
-              {solarMessage}
-            </Typography>
-          ) : null}
           <WeatherContent
             sx={{ pt: 1 }}
             dayPartsWeather={dayPartsWeather}
