@@ -44,10 +44,12 @@ export default function WeatherContent({
                 sx={{ width: 26, height: 26, flexShrink: 0 }}
               />
             </Stack>
-            <Typography variant="caption" fontSize="0.75rem">
+            <Typography variant="caption" fontSize="0.75rem" textAlign="center">
               {part.timeRangeLabel}
             </Typography>
-            <Typography variant="caption">{part.symbolLabel}</Typography>
+            <Typography variant="caption" textAlign={"center"}>
+              {part.symbolLabel}
+            </Typography>
           </Stack>
         );
       })}
