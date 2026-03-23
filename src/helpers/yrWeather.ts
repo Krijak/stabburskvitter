@@ -2,10 +2,9 @@
  * Norwegian Meteorological Institute (Met.no) Locationforecast 2.0 — same data as Yr.
  * @see https://api.met.no/doc/locationforecast/HowTO
  *
- * Terms: identify your app with a valid User-Agent (domain/contact).
+ * Browser builds use the engine’s default User-Agent (Met.no terms); a custom UA in
+ * `fetch()` breaks CORS on Safari / iOS WebKit — see `fetchYrCompactForecast`.
  */
-
-const YR_USER_AGENT = "Stabburskvitter/1.0 https://stabburskvitter.no";
 
 export type YrTimeseriesEntry = {
   time: string;
@@ -229,15 +228,85 @@ export async function fetchYrCompactForecast(
   lon: number,
 ): Promise<YrCompactResponse> {
   const url = `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": YR_USER_AGENT,
-    },
-  });
+  /**
+   * Do not set `User-Agent` in browser fetch: Safari / iOS Chrome (WebKit) treat it as a
+   * non-simple header → CORS preflight. api.met.no does not allow `user-agent` in
+   * Access-Control-Allow-Headers, so the request fails only on those browsers. Desktop
+   * Chrome drops the header anyway. Met.no still receives the browser’s built-in UA.
+   * @see https://api.met.no/doc/locationforecast/HowTO
+   */
+  const res = await fetch(url, { cache: "no-store", mode: "cors" });
   if (!res.ok) {
     throw new Error(`Vær-API: ${res.status} ${res.statusText}`);
   }
   return res.json() as Promise<YrCompactResponse>;
+}
+
+/** Met.no Sunrise 3.0 — same CORS rules as locationforecast (no custom User-Agent in browser). */
+export type SunriseSunsetResponse = {
+  properties?: {
+    sunrise?: { time?: string };
+    sunset?: { time?: string };
+  };
+};
+
+/** Local calendar date as YYYY-MM-DD for Met.no `date` query param. */
+export function formatLocalDateForMetNo(d: Date): string {
+  const y = d.getFullYear();
+  const m = (d.getMonth() + 1).toString().padStart(2, "0");
+  const day = d.getDate().toString().padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** IANA-style offset for sunrise API, e.g. +01:00, -05:00 */
+export function timezoneOffsetMetNo(d: Date = new Date()): string {
+  const offsetMin = -d.getTimezoneOffset();
+  const sign = offsetMin >= 0 ? "+" : "-";
+  const abs = Math.abs(offsetMin);
+  const h = Math.floor(abs / 60)
+    .toString()
+    .padStart(2, "0");
+  const min = (abs % 60).toString().padStart(2, "0");
+  return `${sign}${h}:${min}`;
+}
+
+export async function fetchSunriseSunset(
+  lat: number,
+  lon: number,
+  dateLocal: string,
+  offset: string,
+): Promise<SunriseSunsetResponse> {
+  const params = new URLSearchParams({
+    lat: lat.toFixed(4),
+    lon: lon.toFixed(4),
+    date: dateLocal,
+    offset,
+  });
+  const url = `https://api.met.no/weatherapi/sunrise/3.0/sun?${params}`;
+  const res = await fetch(url, { cache: "no-store", mode: "cors" });
+  if (!res.ok) {
+    throw new Error(`Sol-API: ${res.status} ${res.statusText}`);
+  }
+  return res.json() as Promise<SunriseSunsetResponse>;
+}
+
+/**
+ * Before local sunrise / after local sunset for the given day (Met.no times, ISO with offset).
+ * Between sunrise and sunset → null (sun is up).
+ */
+export function solarStatusMessage(
+  now: Date,
+  sunriseISO?: string,
+  sunsetISO?: string,
+): string | null {
+  if (!sunriseISO || !sunsetISO) return null;
+  const rise = new Date(sunriseISO).getTime();
+  const set = new Date(sunsetISO).getTime();
+  const t = now.getTime();
+  if (Number.isNaN(rise) || Number.isNaN(set)) return null;
+  if (t < rise) return "(Solen har ikke stått opp enda)";
+  if (t > set) return "(Solen har gått ned)";
+  return null;
 }
 
 export function summarizeTodayForecast(
@@ -291,6 +360,59 @@ export function summarizeTodayForecast(
     symbolCode,
     symbolLabel: symbolLabel(symbolCode),
     precipMm: Math.round(precipMm * 10) / 10,
+  };
+}
+
+/** Single step closest to “now” for current conditions */
+export type CurrentHourForecast = {
+  /** Local time for this forecast step */
+  timeLabel: string;
+  symbolCode: string;
+  symbolLabel: string;
+  airTemperatureC: number | null;
+  precipMmNextHour?: number;
+};
+
+/**
+ * Picks the timeseries step whose timestamp is closest to `ref` (default: now)
+ * and returns symbol + temperature for that hour.
+ */
+export function summarizeCurrentHourForecast(
+  timeseries: YrTimeseriesEntry[] | undefined,
+  ref: Date = new Date(),
+): CurrentHourForecast | null {
+  if (!timeseries?.length) return null;
+
+  const refMs = ref.getTime();
+  const withInstantTemp = timeseries.filter(
+    (e) => typeof e.data.instant?.details?.air_temperature === "number",
+  );
+  const pool = withInstantTemp.length > 0 ? withInstantTemp : timeseries;
+
+  const closest = pool.reduce((best, e) => {
+    const t = new Date(e.time).getTime();
+    const bestT = new Date(best.time).getTime();
+    return Math.abs(t - refMs) < Math.abs(bestT - refMs) ? e : best;
+  });
+
+  const symbolCode = pickSymbol(closest) ?? "unknown";
+  const rawTemp = closest.data.instant?.details?.air_temperature;
+  const precip = closest.data.next_1_hours?.details?.precipitation_amount;
+
+  const timeLabel = new Date(closest.time).toLocaleTimeString("nb-NO", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return {
+    timeLabel,
+    symbolCode,
+    symbolLabel: symbolLabel(symbolCode),
+    airTemperatureC: typeof rawTemp === "number" ? Math.round(rawTemp) : null,
+    precipMmNextHour:
+      typeof precip === "number" && precip > 0
+        ? Math.round(precip * 10) / 10
+        : undefined,
   };
 }
 

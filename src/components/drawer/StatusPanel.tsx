@@ -3,6 +3,9 @@ import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import { styled } from "@mui/material/styles";
 import { Stack } from "@mui/material";
+import FaseProgress from "./FaseProgress";
+import WeatherCurrentHour from "../WeatherCurrentHour";
+import { useDayPartsWeather } from "../../hooks/useDayPartsWeather";
 
 export interface StatusData {
   fase: string;
@@ -41,9 +44,9 @@ function getDateProgress(start: Date, end: Date, today: Date): number {
   return Math.round(((t - s) / (e - s)) * 100);
 }
 
-import FaseProgress from "./FaseProgress";
-
 const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
+  const { currentHourForecast, solarMessage, weatherLoading } =
+    useDayPartsWeather();
   const today = new Date();
   const startDate = statusData.startDate;
   const endDate = new Date(
@@ -54,7 +57,7 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
   const endLabel = formatDayMonth(endDate);
 
   return (
-    <Stack alignItems="center" gap={4}>
+    <Stack alignItems="center" gap={2}>
       <Box maxWidth={"7rem"}>
         <img
           src={statusData.img}
@@ -63,7 +66,6 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
           style={{ mixBlendMode: "darken" }}
         />
       </Box>
-
       <Stack
         width={"100%"}
         flexDirection="row"
@@ -91,10 +93,13 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
           {endLabel.day} {endLabel.month}
         </Typography>
       </Stack>
-
       <Stack padding={2} gap={1}>
         {statusData.fase === "Ingen fugler enda" && (
-          <Typography variant="subtitle1" fontWeight={"bold"}>
+          <Typography
+            variant="subtitle1"
+            fontWeight={"bold"}
+            textAlign={"center"}
+          >
             Vi venter i spenning!
           </Typography>
         )}
@@ -103,6 +108,13 @@ const StatusPanel = ({ statusData }: { statusData: StatusData }) => {
       {statusData.fase !== "Ingen fugler enda" && (
         <FaseProgress fasename={statusData.fase} />
       )}
+      <Stack mt={2} width="100%">
+        <WeatherCurrentHour
+          currentHour={currentHourForecast}
+          weatherLoading={weatherLoading}
+          solarMessage={solarMessage}
+        />
+      </Stack>
     </Stack>
   );
 };

@@ -1,14 +1,15 @@
+
 import { Button, Collapse, Dialog, Link, Stack, Typography } from "@mui/material";
-import Box from "@mui/material/Box";
 import blue_tit_flying from "../img/blue_tit_flying.gif";
 import type { DayPartsForecast } from "../helpers/yrWeather";
-import { getWeatherIconUrl } from "../helpers/weatherIcons";
 import { useState } from "react";
+import WeatherContent from "./WeatherContent";
 
 export type CameraFeedDrawerContentProps = {
   showDelayedContent: boolean;
   dayPartsWeather: DayPartsForecast | null;
   weatherLoading: boolean;
+  solarMessage?: string | null;
 };
 
 export default function CameraFeedDrawerContent({
@@ -39,40 +40,20 @@ export default function CameraFeedDrawerContent({
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ flex: 1 }}>
             Har det vært overskyet i hele dag, kanskje? Kameraet i stabburet får
-            strøm fra solceller, og trenger litt solskinn for å lade batteriene.
+            strøm fra et solcellepanel, og trenger litt solskinn for å lade
+            batteriet.
           </Typography>
         </Stack>
-        <Stack mt={3}>
-          {!weatherLoading && dayPartsWeather && (
-            <Stack
-              gap={1}
-              sx={{ width: "100%" }}
-              flexDirection={"row"}
-              justifyContent={"space-between"}
-            >
-              {dayPartsWeather.parts.map((part) => {
-                const iconSrc = getWeatherIconUrl(part.symbolCode);
-                return (
-                  <Stack key={part.id} direction="column" alignItems="center">
-                    <Box
-                      component="img"
-                      src={iconSrc}
-                      alt=""
-                      sx={{ width: 26, height: 26, flexShrink: 0 }}
-                    />
-                    <Stack alignItems={"center"} textAlign={"center"}>
-                      <Typography variant="caption" fontSize={"0.75rem"}>
-                        {part.timeRangeLabel}
-                      </Typography>
-                      <Typography variant="caption">
-                        {part.symbolLabel}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                );
-              })}
-            </Stack>
-          )}
+        <Stack mt={3} sx={{ width: "100%", minWidth: 0 }}>
+          <Typography component={"h1"} variant="subtitle1" fontWeight={"bold"}>
+            Været i dag
+          </Typography>
+          <WeatherContent
+            sx={{ pt: 1 }}
+            dayPartsWeather={dayPartsWeather}
+            weatherLoading={weatherLoading}
+          />
+
           <Link component={Button} sx={{ fontSize: "0.75rem", textAlign: "center", mt: 3 }} onClick={() => setOpenDialog(true)}>Det er sol, hvorfor ser jeg fremdeles ikke noe?</Link>
         </Stack>
       </Collapse>

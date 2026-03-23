@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Box from "@mui/material/Box";
@@ -12,12 +12,13 @@ import Typography from "@mui/material/Typography";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import birdhouseIcon from "../img/stabbur_icon.svg";
+import birdhouseIcon from "../img/stabbur_icon.png";
 import StatusPanel from "./drawer/StatusPanel";
 import OmBlaameisenPanel from "./drawer/OmBlaameisenPanel";
 import OmStabburskvitterPanel from "./drawer/OmStabburskvitterPanel";
 import { statusDataBlåmeis } from "../helpers/data";
 import Fuglene from "./drawer/Fuglene";
+import { useTopBarPanelDrawer } from "../context/TopBarPanelDrawerContext";
 
 export type DrawerId =
   | "status"
@@ -82,8 +83,13 @@ const Logo = () => (
 export default function TopBar() {
   const [navListOpen, setNavListOpen] = useState(false);
   const [openDrawer, setOpenDrawer] = useState<DrawerId | null>(null);
+  const { setTopBarPanelOpen } = useTopBarPanelDrawer();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  useEffect(() => {
+    setTopBarPanelOpen(openDrawer !== null);
+  }, [openDrawer, setTopBarPanelOpen]);
 
   const openPanelDrawer = (id: DrawerId) => {
     setNavListOpen(false);
@@ -104,12 +110,16 @@ export default function TopBar() {
         }}
       >
         <Stack justifyContent="center" sx={{ justifySelf: "start" }}>
-          <img
-            src={birdhouseIcon}
-            alt="Stabbur-ikon"
-            loading="eager"
-            decoding="sync"
-          />
+          <Box width={"3.5rem"}>
+            <img
+              src={birdhouseIcon}
+              width={"100%"}
+              style={{ mixBlendMode: "darken" }}
+              alt="Stabbur-ikon"
+              loading="eager"
+              decoding="sync"
+            />
+          </Box>
         </Stack>
 
         <Box sx={{ justifySelf: "center" }}>
@@ -134,6 +144,7 @@ export default function TopBar() {
                 open={navListOpen}
                 onClose={() => setNavListOpen(false)}
                 slotProps={{
+                  /* Below AppBar, above content/camera drawers */
                   root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
                   backdrop: { sx: { backgroundColor: "transparent" } },
                   paper: {
@@ -202,13 +213,14 @@ export default function TopBar() {
             onClose={closePanelDrawer}
             transitionDuration={{ enter: 300, exit: 300 }}
             slotProps={{
-              root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+              /* Below nav drawer and AppBar */
+              root: { sx: { zIndex: theme.zIndex.appBar - 2 } },
               backdrop: { sx: { backgroundColor: "transparent" } },
               paper: {
                 sx: {
                   left: "unset",
                   right: "2rem",
-                  width: "15rem",
+                  width: "15.5rem",
                   backgroundColor: theme.palette.background.paper,
                   pt: "5rem",
                   pb: "2rem",

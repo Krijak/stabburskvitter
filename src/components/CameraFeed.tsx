@@ -3,15 +3,9 @@ import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import CameraFeedDrawerContent from "./CameraFeedDrawerContent";
-import {
-  fetchYrCompactForecast,
-  summarizeDayPartsForecast,
-  type DayPartsForecast,
-} from "../helpers/yrWeather";
+import { useDayPartsWeather } from "../hooks/useDayPartsWeather";
+import { useTopBarPanelDrawer } from "../context/TopBarPanelDrawerContext";
 import { theme } from "../theme";
-
-const WEATHER_LAT = 59.92;
-const WEATHER_LON = 10.73;
 
 const STREAM_PATHS_LIST_URL = "https://api.stabburskvitter.no/v3/paths/list";
 
@@ -40,10 +34,11 @@ export default function CameraFeed() {
   const PLAYER_URL = `https://camera.stabburskvitter.no/${streamName}/`;
   const [streamStatus, setStreamStatus] = useState<StreamStatus>("offline");
   const [showDrawerContent, setShowDrawerContent] = useState(false);
-  const [dayPartsWeather, setDayPartsWeather] =
-    useState<DayPartsForecast | null>(null);
-  const [weatherLoading, setWeatherLoading] = useState(true);
-  const [, setWeatherError] = useState<string | null>(null);
+  const { dayPartsWeather, weatherLoading } = useDayPartsWeather();
+  const { isTopBarPanelOpen } = useTopBarPanelDrawer();
+
+  const cameraOfflineDrawerOpen =
+    streamStatus === "offline" && !isTopBarPanelOpen;
 
   useEffect(() => {
     const checkStatus = async () => {
@@ -85,46 +80,17 @@ export default function CameraFeed() {
     return () => window.clearTimeout(timeout);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      setWeatherLoading(true);
-      setWeatherError(null);
-      try {
-        const data = await fetchYrCompactForecast(WEATHER_LAT, WEATHER_LON);
-        const summary = summarizeDayPartsForecast(
-          data.properties?.timeseries,
-          new Date(),
-        );
-        if (!cancelled) {
-          setDayPartsWeather(summary);
-        }
-      } catch (e) {
-        if (!cancelled) {
-          setWeatherError(
-            e instanceof Error ? e.message : "Kunne ikke hente værvarsel.",
-          );
-          setDayPartsWeather(null);
-        }
-      } finally {
-        if (!cancelled) setWeatherLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   return (
     <FeedContainer role="img" aria-label="Direktevideo fra fuglekassen">
       {streamStatus === "online" && <PlayerFrame src={PLAYER_URL} />}
       <Drawer
         anchor="top"
-        open={streamStatus === "offline"}
+        open={cameraOfflineDrawerOpen}
         hideBackdrop
         transitionDuration={{ enter: 300, exit: 300 }}
         slotProps={{
-          root: { sx: { zIndex: theme.zIndex.appBar - 1 } },
+          /* Below mobile nav drawer and AppBar (same tier as TopBar content panel) */
+          root: { sx: { zIndex: theme.zIndex.appBar - 2 } },
           backdrop: { sx: { backgroundColor: "transparent" } },
           paper: {
             sx: {

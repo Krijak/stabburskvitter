@@ -4,9 +4,11 @@ import TopBar from "./components/TopBar";
 import CameraFeed from "./components/CameraFeed";
 import { Stack } from "@mui/material";
 import background from "./img/background.png";
+import { TopBarPanelDrawerProvider } from "./context/TopBarPanelDrawerContext";
 
 export default function App() {
   return (
+    <TopBarPanelDrawerProvider>
     <Stack
       direction="column"
       sx={{ minHeight: "100svh", height: "100%" }}
@@ -26,27 +28,14 @@ export default function App() {
             alignItems="center"
             justifyContent="center"
             zIndex={0}
-          >
-            {/* <Stack
-              width="6rem"
-              justifyContent="center"
-              alignItems="center"
-              paddingBottom={"50px"}
-            >
-              <Halo />
-              <img
-                src={blue_tit_flying}
-                style={{ mixBlendMode: "darken" }}
-                width="100%"
-              />
-            </Stack> */}
-          </Stack>
+          ></Stack>
           <CameraFeedWrapper>
             <CameraFeed />
           </CameraFeedWrapper>
         </ContentArea>
       </MainContent>
     </Stack>
+    </TopBarPanelDrawerProvider>
   );
 }
 
