@@ -14,7 +14,6 @@ export default function CameraFeedDrawerContent({
   showDelayedContent,
   dayPartsWeather,
   weatherLoading,
-  solarMessage,
 }: CameraFeedDrawerContentProps) {
   return (
     <Stack gap={2} padding={4} alignItems="center" justifyContent="center">
